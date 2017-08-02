@@ -9,9 +9,17 @@ from functools import reduce
 def email(email_str):
     EMAIL_REGEX = re.compile(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$")
     if not EMAIL_REGEX.match(email_str):
-        raise ValueError('Email is incorrect')
+        raise ValueError('Inappropriate email')
     else:
-        return True
+        return email_str
+
+def password(pwd_str):
+    # password must contain at lest one upper case, one lower case one digit, length from 6 to 20
+    pwd_rule = re.compile(r'((?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20})')
+    if not pwd_rule.match(pwd_str):
+        raise ValueError('Inappropriate password')
+    else:
+        return pwd_str
 
 user_fields = {
     'id': fields.Integer,
@@ -22,8 +30,14 @@ user_fields = {
     'date_updated': fields.DateTime,
 }
 post_parser = reqparse.RequestParser()
-post_parser.add_argument('email', required=True, type=email, help='missing email')
-post_parser.add_argument('password', required=True, help='missing password')
+post_parser.add_argument('email', required=True, type=email, trim=True)
+post_parser.add_argument('password', required=True, type=password, trim=True)
+
+put_parser = reqparse.RequestParser()
+put_parser.add_argument('email', type=email, trim=True)
+put_parser.add_argument('password', type=password, trim=True)
+put_parser.add_argument('username', trim=True)
+put_parser.add_argument('roles', trim=True)
 
 
 class UserResource(Resource):
@@ -36,16 +50,17 @@ class UserResource(Resource):
     @marshal_with(user_fields)
     def post(self):
         args = post_parser.parse_args()
-        if not reduce(lambda x,y: x in ['email', 'password'] and y in ['email', 'password'], args.keys()):
+        if not reduce(lambda x, y: x in ['email', 'password'] and y in ['email', 'password'], args.keys()):
             return 'missing parameters', 404
         else:
-            user = User(args.email.data, args.password.data)
+            user = User(args['email'].lower(), args['password'])
             db.session.add(user)
             db.session.commit()
             return user, 201
 
     def put(self):
-        pass
+        args = put_parser.parse_args()
+
 
     def delete(self):
         pass
