@@ -1,0 +1,4 @@
+WTF_CSRF_ENABLED = False
+DEBUG = True
+SECRET_KEY = 'you-will-never-guess'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
