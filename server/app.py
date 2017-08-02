@@ -5,18 +5,18 @@ from flask_restful import reqparse, Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 from flask_bcrypt import Bcrypt
+from flask_wtf import CSRFProtect
 # from flask_assets import YAMLLoader, Environment
 
-
-basedir = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../')
-
 app = Flask(__name__)
-app.config.from_object('server.configuration.config')
+app.config.from_object(os.environ['APP_SETTINGS'])
 # Initial Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir, 'app.sqlite')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir, 'app.sqlite')
 db = SQLAlchemy(app)
-# Restful Api
-api = Api(app)
+# CSRF protection
+csrf_protect = CSRFProtect(app)
+# Restful Api, with CSRF exempt
+api = Api(app, decorators=[csrf_protect.exempt])
 # Encryption
 flaskBcrypt = Bcrypt(app)
 # HTTP authentication
@@ -37,7 +37,6 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
 
-
 from server.resources.user import UserResource
-api.add_resource(UserResource, '/users')
+api.add_resource(UserResource, '/api/users')
 

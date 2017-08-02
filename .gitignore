@@ -1,8 +1,7 @@
 .idea
 *.pyc
 *.pyo
-app.db
-search.db
-flask
 .webassets-cache
 *.sqlite
+.env
+sys
