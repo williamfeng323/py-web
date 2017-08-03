@@ -59,7 +59,7 @@ class UserResource(Resource):
             return user, 201
 
     def put(self):
-        args = put_parser.parse_args()
+        return {'msg': 'function on the road!'}, 201
 
 
     def delete(self):
