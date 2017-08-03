@@ -37,6 +37,6 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
 
-from server.resources.user import UserResource
+from server.resources.users import UserResource
 api.add_resource(UserResource, '/api/users')
 
