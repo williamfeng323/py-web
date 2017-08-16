@@ -1,19 +1,32 @@
 import unittest
 import json
-from server.app import app, db
+import sys, os
+from server.app import db, user_datastore
+from server.models.user import User
+import pdb
 # from server.configuration.config import basedir
 
 
-class UserResources(unittest.TestCase):
+class UserModels(unittest.TestCase):
     def setUp(self):
-        self.app = app.test_client()
+        # pdb.set_trace()
         db.create_all()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
 
-    def test_put(self):
-        response = self.app.put('/api/users')
-        print(response)
-        self.assertEqual(json.loads(response.get_data()), {'msg': 'function on the road!'})
+    # def test_init_user(self):
+    #     user = user_datastore.create_user(email='test@test.com', password='a')
+    #     db.session.commit()
+    #     # expected = User.query.filter_by(email='test@test.com').first()
+    #     # self.assertEqual(user, expected)
+
+    # def test_invalid_email(self):
+    #     pass
+    #
+    # def test_invalid_password(self):
+    #     pass
+    #
+    # def test_no_role_exception(self):
+    #     pass

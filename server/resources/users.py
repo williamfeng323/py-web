@@ -1,5 +1,6 @@
 from server.models.user import User
-from server.app import auth, db
+from server.app import db, user_datastore
+from flask_security import login_required
 
 from flask_restful import Resource, reqparse, marshal_with, fields
 import re
@@ -27,11 +28,11 @@ user_fields = {
     'email': fields.String,
     'roles': fields.String,
     'date_created': fields.DateTime,
-    'date_updated': fields.DateTime,
+    'date_updated': fields.DateTime
 }
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('email', required=True, type=email, trim=True)
-post_parser.add_argument('password', required=True, type=password, trim=True)
+# post_parser.add_argument('password', required=True, type=password, trim=True)
 
 put_parser = reqparse.RequestParser()
 put_parser.add_argument('email', type=email, trim=True)
@@ -41,11 +42,19 @@ put_parser.add_argument('roles', trim=True)
 
 
 class UserResource(Resource):
-    @auth.login_required
+
     @marshal_with(user_fields)
+    def marshal_user(self, user):
+        return user
+
+    @login_required
     def get(self):
         args = post_parser.parse_args()
-        return User.query.filter_by(email=args['email']).first()
+        user = User.query.filter_by(email=args['email']).first()
+        if user is None:
+            return {'msg': 'user not found'}, 201
+        else:
+            return self.marshal_user(user), 201
 
     @marshal_with(user_fields)
     def post(self):
@@ -53,11 +62,11 @@ class UserResource(Resource):
         if not reduce(lambda x, y: x in ['email', 'password'] and y in ['email', 'password'], args.keys()):
             return 'missing parameters', 404
         else:
-            user = User(args['email'].lower(), args['password'])
-            db.session.add(user)
+            user = user_datastore.create_user(email=args['email'].lower(), password=args['password'])
             db.session.commit()
             return user, 201
 
+    @login_required
     def put(self):
         return {'msg': 'function on the road!'}, 201
 
