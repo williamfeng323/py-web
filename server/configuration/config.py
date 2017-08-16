@@ -8,7 +8,9 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_DATABASE_URI = 'postgresql://' + os.environ['DATABASE_USER']+':' + os.environ['DATABASE_PASSWORD'] \
                               + os.environ['DATABASE_URL']
-
+    SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
+    SECURITY_TRACKABLE = True
+    SECURITY_PASSWORD_SALT = 'get_crazy_when_guess_it'
 
 class ProductionConfig(Config):
     DEBUG = False

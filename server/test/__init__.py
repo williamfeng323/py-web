@@ -1,7 +1,7 @@
 import os, sys
 from functools import reduce
 from unittest import TestSuite
-from server.test.resources.user_test import UserResources
+from server.test.resources.users_resource_test import UserResources
 
 os.environ['APP_SETTINGS'] = 'server.configuration.config.TestingConfig'
 os.environ['DATABASE_URL'] = "@localhost/GTA-TEST"
