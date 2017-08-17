@@ -3,7 +3,8 @@ from flask import Flask
 # import flask_restful as restful
 from flask_restful import reqparse, Api
 from flask_sqlalchemy import SQLAlchemy
-from flask_httpauth import HTTPBasicAuth
+from flask_security import SQLAlchemyUserDatastore, Security
+# from flask_httpauth import HTTPBasicAuth
 from flask_bcrypt import Bcrypt
 from flask_wtf import CSRFProtect
 # from flask_assets import YAMLLoader, Environment
@@ -20,7 +21,7 @@ api = Api(app, decorators=[csrf_protect.exempt])
 # Encryption
 flaskBcrypt = Bcrypt(app)
 # HTTP authentication
-auth = HTTPBasicAuth()
+# auth = HTTPBasicAuth()
 
 # Assets loader
 # loader = YAMLLoader('app/config/asset_config.yml')
@@ -37,6 +38,9 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
 
+from server.models.user import User, Role
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
+
 from server.resources.users import UserResource
 api.add_resource(UserResource, '/api/users')
-
